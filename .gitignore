@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments and editors
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+.vscode/
+.idea/
+
+# Credentials
+api_keys/
+*.pem
+*.key
+
+# Experiment tracking and outputs
+wandb/
+logs/
+checkpoints/
+outputs/
+results/
+jobq/
+
+# Data and local caches
+data/
+lmms_eval/dataset/
+data_gen/hf_models/
+.cache/
+
+# Model weights and generated arrays
+*.bin
+*.ckpt
+*.npy
+*.npz
+*.pt
+*.pth
+*.safetensors
+
+# Archives and generated records
+*.gz
+*.jsonl
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+
+# Packaging
+build/
+dist/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db

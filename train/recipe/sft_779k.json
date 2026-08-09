@@ -1,0 +1,8 @@
+[
+    {
+        "name": "llava_next_raw_format",
+        "image_folder": "data/llava_next_raw_format",
+        "annotation": "data/llava_next_raw_format/llava_next_raw_format_processed.json",
+        "sample_ratio": 1.0
+    }
+]
