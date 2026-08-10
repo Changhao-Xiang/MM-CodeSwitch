@@ -1,33 +1,55 @@
 # MMCS: Multi-Modal Code-Switching
 
-[arXiv (Coming soon)](#)
+This repository contains the model, training, and evaluation code for MultiModal Code-Switching: Interleaving Visual Objects into Language for Explicit Object-Level Alignment [arXiv (Coming soon)](#).
 
-This repository contains the model, training, and evaluation code for MultiModal Code-Switching: Interleaving Visual Objects into Language for Explicit Object-Level Alignment.
+Training consists of 773k-sample MMCS pretraining followed by 779k-sample LLaVA-NeXT LoRA supervised fine-tuning (SFT). Evaluation is provided through the bundled `lmms_eval` fork.
 
-The released configuration uses SigLIP2 as the vision encoder and Qwen2.5-3B-Instruct as the language model. Training consists of 773k-sample MMCS pretraining followed by 779k-sample LLaVA-NeXT LoRA supervised fine-tuning (SFT). Evaluation is provided through the bundled `lmms_eval` fork.
+
 
 ## Repository layout
 
 - `common/`: shared command-line arguments and helpers.
-- `model/`: LLaVA-NeXT model implementations, dynamic-resolution logic, MMCS code-switching, and projectors.
+- `model/`: model implementations, dynamic-resolution logic, code-switching, and projectors.
 - `train/`: the training entry point, datasets, trainer, and data recipes.
 - `scripts/train/`: two-stage training scripts for the released LLM backbones.
 - `lmms_eval/`: vendored evaluation harness and MMCS model adapters.
 - `scripts/eval/all.sh`: multi-benchmark evaluation entry point.
 - `utils/`: data formatting and merging utilities.
 
+
+
 ## Installation
 
-Python jobs should be launched from the repository root. The research environment uses Python 3.10 and CUDA-enabled PyTorch:
+Python jobs should be launched from the repository root. The training environment was validated with Python 3.10.20, PyTorch 2.6.0 (CUDA 12.4), and Transformers 4.51.3:
 
 ```bash
-conda create -n mmcs python=3.10 -y
+conda create -n mmcs python=3.10.20 -y
 conda activate mmcs
 pip install -r requirements.txt
+pip install flash-attn==2.7.4.post1 --no-build-isolation
 pip install -e ./lmms_eval
 ```
 
-`flash-attn`, DeepSpeed, and some evaluation tasks may require a compiler and a CUDA toolkit compatible with the installed PyTorch version. Install task-specific optional dependencies only for the benchmarks you plan to run.
+FlashAttention is installed after PyTorch and the other dependencies because its build process imports PyTorch. We used version 2.7.4.post1; see the [official FlashAttention repository](https://github.com/Dao-AILab/flash-attention) for build requirements and prebuilt wheels compatible with your Python, PyTorch, and CUDA versions.
+
+The key versions used for training are:
+
+```text
+Python        3.10
+PyTorch       2.6.0+cu124
+torchvision   0.21.0
+torchaudio    2.6.0
+Transformers  4.51.3
+FlashAttention 2.7.4.post1
+DeepSpeed     0.15.4
+PEFT          0.14.0
+NumPy         2.2.6
+datasets      2.19.0
+```
+
+DeepSpeed, FlashAttention, and some evaluation tasks may require system packages or a CUDA toolkit compatible with the installed PyTorch version. Install task-specific optional dependencies only for the benchmarks you plan to run.
+
+
 
 ## Data
 
@@ -44,18 +66,20 @@ hf download LockOnN/MMCS-Data \
 
 Download the source images from the official sites or repositories below, then arrange them under `data/images` with the paths expected by the annotations:
 
-| Source | Official source | Required layout under `data/images` |
-| --- | --- | --- |
-| COCO 2014 | [COCO downloads](https://cocodataset.org/#download) | `coco/train2014/*.jpg` |
-| Flickr30K | [University of Illinois Flickr30K release](https://shannon.cs.illinois.edu/DenotationGraph/data/index.html) | `flickr30k/*.jpg` |
-| GQA | [Stanford GQA downloads](https://cs.stanford.edu/people/dorarad/gqa/download.html) | `gqa/images/*.jpg` |
-| Objects365 | [BAAI Objects365_2019 download](https://data.baai.ac.cn/datadetail/Objects365_2019) | `objects365/train/*.jpg` |
-| Open Images | [CVDF Open Images repository](https://github.com/cvdfoundation/open-images-dataset) and [official `train_0.tar.gz`](https://open-images-dataset.s3.amazonaws.com/tar/train_0.tar.gz) | `openimages/train_0/*.jpg` |
-| SA-1B | [Meta SA-1B download portal](https://ai.meta.com/datasets/segment-anything-downloads/) and [official repository](https://github.com/facebookresearch/segment-anything) | `SA/*.jpg` |
+
+| Source      | Official source                                                                                                                                                                      | Required layout under `data/images` |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- |
+| COCO 2014   | [COCO downloads](https://cocodataset.org/#download)                                                                                                                                  | `coco/train2014/*.jpg`              |
+| Flickr30K   | [University of Illinois Flickr30K release](https://shannon.cs.illinois.edu/DenotationGraph/data/index.html)                                                                          | `flickr30k/*.jpg`                   |
+| GQA         | [Stanford GQA downloads](https://cs.stanford.edu/people/dorarad/gqa/download.html)                                                                                                   | `gqa/images/*.jpg`                  |
+| Objects365  | [BAAI Objects365_2019 download](https://data.baai.ac.cn/datadetail/Objects365_2019)                                                                                                  | `objects365/train/*.jpg`            |
+| Open Images | [CVDF Open Images repository](https://github.com/cvdfoundation/open-images-dataset) and [official](https://open-images-dataset.s3.amazonaws.com/tar/train_0.tar.gz) `train_0.tar.gz` | `openimages/train_0/*.jpg`          |
+| SA-1B       | [Meta SA-1B download portal](https://ai.meta.com/datasets/segment-anything-downloads/) and [official repository](https://github.com/facebookresearch/segment-anything)               | `SA/*.jpg`                          |
+
 
 For COCO, download the 2014 training images. For Flickr30K, download the image release after reviewing its Flickr usage terms. For GQA, download `Images.zip`. For Objects365, obtain the training images from the linked BAAI Objects365_2019 page and preserve the `obj365_train_*.jpg` filenames. Extract or link each source into the layout shown above.
 
-The MMCS Open Images annotations reference 127,237 images whose official ImageIDs start with `0`. They are all contained in CVDF's single `train_0.tar.gz` image archive (approximately 46 GB). The similarly named `open-images-dataset-train0.tsv` is a separate one-million-row manifest for transferring original image URLs and is not the `train_0` image archive. You may download and extract the archive directly, or use the official downloader below to fetch only the referenced ImageIDs:
+The MMCS Open Images annotations reference 127,237 images whose official ImageIDs start with `0`. They are all contained in CVDF's single `train_0.tar.gz` image archive (approximately 46 GB). You may download and extract the archive directly, or use the downloader below to fetch only the referenced ImageIDs:
 
 ```bash
 mkdir -p data/images/openimages/train_0
@@ -71,38 +95,9 @@ python data/openimages_downloader.py data/openimages_mmcs_ids.txt \
   --num_processes=16
 ```
 
-For SA-1B, accept the SA-1B Research License on Meta's download portal and download `sa_000000.tar` through `sa_000010.tar` (11 archives in total). The released annotations reference 91,107 unique images from these archives, ranging from `sa_2.jpg` through `sa_111876.jpg`. Only the referenced `.jpg` files are needed for MMCS; place them directly in `data/images/SA`.
+For SA-1B, accept the SA-1B Research License on Meta's download portal and download `sa_000000.tar` through `sa_000010.tar` (11 archives in total).
 
-Only files referenced by the annotations are required. After preparing the directories, verify that every annotation resolves under `data/images` without loading the multi-gigabyte JSON files into memory:
-
-```bash
-python - <<'PY'
-import re
-from pathlib import Path
-
-image_root = Path("data/images")
-annotation_root = Path("data/annotations")
-image_pattern = re.compile(r'^\s*"image": "([^"]+)"')
-missing_count = 0
-missing_examples = []
-
-for annotation in sorted(annotation_root.glob("*_llava.json")):
-    with annotation.open(encoding="utf-8") as stream:
-        for line in stream:
-            match = image_pattern.match(line)
-            if match and not (image_root / match.group(1)).is_file():
-                missing_count += 1
-                if len(missing_examples) < 20:
-                    missing_examples.append((annotation.name, match.group(1)))
-
-print(f"missing images: {missing_count}")
-for annotation, image in missing_examples:
-    print(f"{annotation}: {image}")
-raise SystemExit(1 if missing_count else 0)
-PY
-```
-
-The second stage uses the official 779k LLaVA-NeXT SFT release from [lmms-lab/LLaVA-NeXT-Data](https://huggingface.co/datasets/lmms-lab/LLaVA-NeXT-Data). Download the official raw-format JSON and image archives, then extract them in place:
+The SFT stage uses the official 779k LLaVA-NeXT SFT release from [lmms-lab/LLaVA-NeXT-Data](https://huggingface.co/datasets/lmms-lab/LLaVA-NeXT-Data). Download the official raw-format JSON and image archives, then extract them in place:
 
 ```bash
 hf download lmms-lab/LLaVA-NeXT-Data \
@@ -166,15 +161,19 @@ Recipe paths are relative to the repository root. Each entry has the form:
 }
 ```
 
+
+
 ## Training
 
 Choose a backbone and launch its two-stage training script from the repository root:
 
-| Script | Vision encoder | Language model |
-| --- | --- | --- |
-| `scripts/train/siglip2-qwen25-3b.sh` | `google/siglip2-so400m-patch16-384` | `Qwen/Qwen2.5-3B-Instruct` |
-| `scripts/train/siglip2-qwen3-8b.sh` | `google/siglip2-so400m-patch16-384` | `Qwen/Qwen3-8B` |
+
+| Script                               | Vision encoder                      | Language model                        |
+| ------------------------------------ | ----------------------------------- | ------------------------------------- |
+| `scripts/train/siglip2-qwen25-3b.sh` | `google/siglip2-so400m-patch16-384` | `Qwen/Qwen2.5-3B-Instruct`            |
+| `scripts/train/siglip2-qwen3-8b.sh`  | `google/siglip2-so400m-patch16-384` | `Qwen/Qwen3-8B`                       |
 | `scripts/train/siglip2-llama3-8b.sh` | `google/siglip2-so400m-patch16-384` | `meta-llama/Meta-Llama-3-8B-Instruct` |
+
 
 ```bash
 bash scripts/train/siglip2-qwen25-3b.sh
@@ -194,6 +193,8 @@ The script runs two stages in sequence:
 
 1. MMCS pretraining with `train/recipe/mmcs.json`, a frozen SigLIP2 vision encoder, a frozen language model, and a trainable patch-merger projector.
 2. LoRA SFT with `train/recipe/sft_779k.json`.
+
+
 
 ## Evaluation
 
