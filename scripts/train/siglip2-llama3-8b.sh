@@ -35,8 +35,8 @@ torchrun --nproc_per_node "$NUM_GPUS" --master_port "$MASTER_PORT" \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \
-    --per_device_train_batch_size 8 \
-    --gradient_accumulation_steps 2 \
+    --per_device_train_batch_size 16 \
+    --gradient_accumulation_steps 1 \
     --gradient_checkpointing True \
     --model_max_length 2048 \
     --dataloader_num_workers 4 \
@@ -70,8 +70,8 @@ torchrun --nproc_per_node "$NUM_GPUS" --master_port "$MASTER_PORT" \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \
-    --per_device_train_batch_size 1 \
-    --gradient_accumulation_steps 2 \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 1 \
     --gradient_checkpointing True \
     --model_max_length 8192 \
     --dataloader_num_workers 4 \

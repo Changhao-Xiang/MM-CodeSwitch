@@ -3,7 +3,7 @@ set -euo pipefail
 
 # SigLIP2 + Qwen3-8B: 773k MMCS pretraining followed by 779k LLaVA-NeXT LoRA SFT.
 MASTER_PORT=${MASTER_PORT:-$(shuf -i 20001-29999 -n 1)}
-NUM_GPUS=${NUM_GPUS:-4}
+NUM_GPUS=${NUM_GPUS:-8}
 VISION_MODEL_PATH=${VISION_MODEL_PATH:-google/siglip2-so400m-patch16-384}
 LANGUAGE_MODEL_PATH=${LANGUAGE_MODEL_PATH:-Qwen/Qwen3-8B}
 PRETRAIN_RECIPE=${PRETRAIN_RECIPE:-train/recipe/mmcs.json}
@@ -36,7 +36,7 @@ torchrun --nproc_per_node "$NUM_GPUS" --master_port "$MASTER_PORT" \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \
     --per_device_train_batch_size 16 \
-    --gradient_accumulation_steps 2 \
+    --gradient_accumulation_steps 1 \
     --gradient_checkpointing True \
     --model_max_length 2048 \
     --dataloader_num_workers 4 \
@@ -70,8 +70,8 @@ torchrun --nproc_per_node "$NUM_GPUS" --master_port "$MASTER_PORT" \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \
-    --per_device_train_batch_size 1 \
-    --gradient_accumulation_steps 4 \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 1 \
     --gradient_checkpointing True \
     --model_max_length 8192 \
     --dataloader_num_workers 4 \

@@ -70,14 +70,14 @@ torchrun --nproc_per_node "$NUM_GPUS" --master_port "$MASTER_PORT" \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \
-    --per_device_train_batch_size 4 \
-    --gradient_accumulation_steps 2 \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 1 \
     --gradient_checkpointing True \
     --model_max_length 8192 \
     --dataloader_num_workers 4 \
     --eval_strategy "no" \
     --save_strategy "steps" \
-    --save_steps 6000 \
+    --save_steps 24000 \
     --save_total_limit 1 \
     --save_only_model False \
     --logging_steps 5 \
