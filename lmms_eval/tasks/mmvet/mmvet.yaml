@@ -1,4 +1,4 @@
-dataset_path: lmms_eval/dataset/MMVet
+dataset_path: lmms-lab/MMVet
 dataset_kwargs:
   token: True
 task: "mmvet"

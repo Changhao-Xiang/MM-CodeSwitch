@@ -2,7 +2,7 @@
 
 task: "blink_val"
 test_split: val
-dataset_path: lmms_eval/dataset/BLINK
+dataset_path: BLINK-Benchmark/BLINK
 dataset_kwargs:
   token: True
 output_type: generate_until

@@ -1,4 +1,4 @@
-dataset_path: lmms_eval/dataset/SEED-Bench-2-Plus
+dataset_path: doolayer/SEED-Bench-2-Plus
 dataset_kwargs:
   token: True
 task: "seedbench_2_plus"

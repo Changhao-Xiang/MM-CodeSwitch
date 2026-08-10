@@ -1,4 +1,4 @@
-dataset_path: lmms_eval/dataset/OCRBench_v2
+dataset_path: ling99/OCRBench_v2
 dataset_kwargs:
   token: True
 task: "ocrbench_v2"

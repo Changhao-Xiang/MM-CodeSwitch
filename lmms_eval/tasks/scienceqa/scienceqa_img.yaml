@@ -1,5 +1,5 @@
-dataset_path: lmms_eval/dataset/ScienceQA-IMG
-# dataset_name: ScienceQA-IMG
+dataset_path: lmms-lab/ScienceQA
+dataset_name: ScienceQA-IMG
 task: "scienceqa_img"
 dataset_kwargs:
   token: True

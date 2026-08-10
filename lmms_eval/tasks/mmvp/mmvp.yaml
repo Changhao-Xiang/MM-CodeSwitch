@@ -1,4 +1,4 @@
-dataset_path: ./lmms_eval/dataset/MMVP
+dataset_path: MMVP/MMVP
 dataset_kwargs:
   token: True
 task: "mmvp"

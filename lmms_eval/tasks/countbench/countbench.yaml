@@ -1,6 +1,6 @@
 # Copyright 2025 Xiaomi Corporation.
 
-dataset_path: lmms_eval/dataset/CountBenchQA
+dataset_path: vikhyatk/CountBenchQA
 dataset_kwargs: {}
 task: "countbench"
 test_split: test   

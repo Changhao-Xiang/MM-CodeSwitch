@@ -1,4 +1,4 @@
-dataset_path: lmms_eval/dataset/VibeEval
+dataset_path: RekaAI/VibeEval
 dataset_kwargs:
   token: True
 task: "vibe_eval"

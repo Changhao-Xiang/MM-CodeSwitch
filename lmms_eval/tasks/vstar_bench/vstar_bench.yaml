@@ -1,6 +1,6 @@
 # Copyright 2025 Xiaomi Corporation.
 
-dataset_path: lmms_eval/dataset/vstar_bench
+dataset_path: lmms-lab/vstar-bench
 dataset_kwargs: {}
 task: "vstar_bench"
 test_split: test  

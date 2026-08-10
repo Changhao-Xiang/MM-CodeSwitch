@@ -1,4 +1,4 @@
-dataset_path: lmms_eval/dataset/ai2d
+dataset_path: lmms-lab/ai2d
 task: "ai2d"
 dataset_kwargs:
   token: True

@@ -1,7 +1,7 @@
 tag:
   - multiple_choice
 task: hellaswag
-dataset_path: ./dataset/hellaswag
+dataset_path: hellaswag
 dataset_name: null
 output_type: multiple_choice
 training_split: train

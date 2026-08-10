@@ -1,6 +1,6 @@
 # Copyright 2025 Xiaomi Corporation.
 
-dataset_path: lmms_eval/dataset/charxiv_qas 
+dataset_path: princeton-nlp/CharXiv
 dataset_kwargs:
   token: True
 task: "charxiv"

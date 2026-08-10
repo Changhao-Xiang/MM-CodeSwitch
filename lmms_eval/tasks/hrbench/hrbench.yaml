@@ -1,4 +1,4 @@
-dataset_path: lmms_eval/dataset/HRBench
+dataset_path: DreamMr/HR-Bench
 dataset_kwargs:
   token: True
 task: "hrbench"

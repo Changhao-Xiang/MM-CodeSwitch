@@ -1,4 +1,4 @@
-dataset_path: lmms_eval/dataset/ChartQA
+dataset_path: lmms-lab/ChartQA
 dataset_kwargs:
   token: True
 task: "chartqa"
@@ -31,4 +31,3 @@ lmms_eval_specific_kwargs:
   qwen_vl:
     pre_prompt: ""
     post_prompt: " Answer:"
-

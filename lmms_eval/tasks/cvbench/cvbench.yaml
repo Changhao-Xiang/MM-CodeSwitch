@@ -1,6 +1,6 @@
 # Copyright 2025 Xiaomi Corporation.
 
-dataset_path: lmms_eval/dataset/CV-Bench 
+dataset_path: nyu-visionx/CV-Bench
 dataset_kwargs:
   token: True
 task: "cvbench"

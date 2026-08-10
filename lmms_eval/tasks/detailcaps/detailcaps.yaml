@@ -1,4 +1,4 @@
-dataset_path: lmms_eval/dataset/DetailCaps-4870
+dataset_path: foundation-multimodal-models/DetailCaps-4870
 dataset_kwargs:
   token: True
 task: "detailcaps"
