@@ -1,6 +1,8 @@
 # MMCS: Multi-Modal Code-Switching
 
-This repository contains the model, training, and evaluation code for MMCS(Multimodal Code-Switching). MMCS extends a LLaVA-style vision-language model with interleaved object visual tokens.
+[arXiv (Coming soon)](#)
+
+This repository contains the model, training, and evaluation code for MultiModal Code-Switching: Interleaving Visual Objects into Language for Explicit Object-Level Alignment.
 
 The released configuration uses SigLIP2 as the vision encoder and Qwen2.5-3B-Instruct as the language model. Training consists of 773k-sample MMCS pretraining followed by 779k-sample LLaVA-NeXT LoRA supervised fine-tuning (SFT). Evaluation is provided through the bundled `lmms_eval` fork.
 
