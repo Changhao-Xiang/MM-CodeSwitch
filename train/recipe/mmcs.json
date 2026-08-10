@@ -18,15 +18,9 @@
         "sample_ratio": 1.0
     },
     {
-        "name": "objects365_part1_253k_mmcs",
+        "name": "objects365_343k_mmcs",
         "image_folder": "data/images",
-        "annotation": "data/segment/objects365_part1_253k_llava.json",
-        "sample_ratio": 1.0
-    },
-    {
-        "name": "objects365_part2_90k_mmcs",
-        "image_folder": "data/images",
-        "annotation": "data/segment/objects365_part2_90k_llava.json",
+        "annotation": "data/segment/objects365_343k_llava.json",
         "sample_ratio": 1.0
     },
     {

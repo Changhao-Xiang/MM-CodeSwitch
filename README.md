@@ -29,12 +29,100 @@ pip install -e ./lmms_eval
 
 ## Data
 
-The released dataset for pretraining is hosted at [MMCS-Data](https://huggingface.co/datasets/LockOnN/MMCS-Data).
+The released 773k pretraining annotations are hosted at [LockOnN/MMCS-Data](https://huggingface.co/datasets/LockOnN/MMCS-Data). This repository distributes generated annotations only; obtain the source images from their original providers and follow each dataset's license and terms.
 
-Download the datasets under `data/`, or update the paths in the checked-in recipes:
+Download the annotations from the repository root:
 
-- `train/recipe/mmcs.json`: 773k MMCS pretraining data. Images are read from `data/images`, and annotations from `data/segment`.
-- `train/recipe/sft_779k.json`: 779k LLaVA-NeXT SFT data from [lmms-lab/LLaVA-NeXT-Data](https://huggingface.co/datasets/lmms-lab/LLaVA-NeXT-Data), stored under `data/llava_next_raw_format`.
+```bash
+hf download LockOnN/MMCS-Data \
+  --repo-type dataset \
+  --include "annotations/*" \
+  --local-dir data/mmcs_download
+
+ln -s mmcs_download/annotations data/segment
+```
+
+If `data/segment` already exists, replace the symbolic-link command with the equivalent copy or path update for your setup.
+
+Download the source images from the official sites or repositories below, then arrange them under `data/images` with the paths expected by the annotations:
+
+| Source | Official source | Required layout under `data/images` |
+| --- | --- | --- |
+| COCO 2014 | [COCO downloads](https://cocodataset.org/#download) | `coco/train2014/*.jpg` |
+| Flickr30K | [University of Illinois Flickr30K release](https://shannon.cs.illinois.edu/DenotationGraph/data/index.html) | `flickr30k/*.jpg` |
+| GQA | [Stanford GQA downloads](https://cs.stanford.edu/people/dorarad/gqa/download.html) | `gqa/images/*.jpg` |
+| Objects365 | [Objects365 official download page](https://www.objects365.org/download.html) | `objects365/train/*.jpg` |
+| Open Images | [Open Images V7 downloads](https://storage.googleapis.com/openimages/web/download_v7.html) and [official downloader](https://github.com/openimages/dataset) | `openimages/train_0/*.jpg` |
+| SA-1B | [Meta SA-1B download portal](https://ai.meta.com/datasets/segment-anything-downloads/) and [official repository](https://github.com/facebookresearch/segment-anything) | `SA/*.jpg` |
+
+For COCO, download the 2014 training images. For Flickr30K, download the image release after reviewing its Flickr usage terms. For GQA, download `Images.zip`. For Objects365, register through the official download page, download the training images, and preserve the `obj365_train_*.jpg` filenames. Extract or link each source into the layout shown above.
+
+The MMCS Open Images subset contains 127,237 training images from the official `train_0` partition. The official downloader can fetch only the referenced IDs:
+
+```bash
+mkdir -p data/images/openimages/train_0
+
+sed -n 's#.*"image": "openimages/train_0/\([^"]*\)\.jpg".*#train/\1#p' \
+  data/segment/openimages_127k_llava.json > data/openimages_mmcs_ids.txt
+
+wget -O data/openimages_downloader.py \
+  https://raw.githubusercontent.com/openimages/dataset/master/downloader.py
+pip install boto3 tqdm
+python data/openimages_downloader.py data/openimages_mmcs_ids.txt \
+  --download_folder=data/images/openimages/train_0 \
+  --num_processes=16
+```
+
+For SA-1B, accept the SA-1B Research License on Meta's download portal and download the official tar shards containing the referenced images (`sa_2.jpg` through `sa_111876.jpg`). Only the `.jpg` files are needed for MMCS; place them directly in `data/images/SA`.
+
+Only files referenced by the annotations are required. After preparing the directories, verify that every annotation resolves under `data/images` without loading the multi-gigabyte JSON files into memory:
+
+```bash
+python - <<'PY'
+import re
+from pathlib import Path
+
+image_root = Path("data/images")
+annotation_root = Path("data/segment")
+image_pattern = re.compile(r'^\s*"image": "([^"]+)"')
+missing_count = 0
+missing_examples = []
+
+for annotation in sorted(annotation_root.glob("*_llava.json")):
+    with annotation.open(encoding="utf-8") as stream:
+        for line in stream:
+            match = image_pattern.match(line)
+            if match and not (image_root / match.group(1)).is_file():
+                missing_count += 1
+                if len(missing_examples) < 20:
+                    missing_examples.append((annotation.name, match.group(1)))
+
+print(f"missing images: {missing_count}")
+for annotation, image in missing_examples:
+    print(f"{annotation}: {image}")
+raise SystemExit(1 if missing_count else 0)
+PY
+```
+
+The second stage uses the official 779k LLaVA-NeXT SFT release from [lmms-lab/LLaVA-NeXT-Data](https://huggingface.co/datasets/lmms-lab/LLaVA-NeXT-Data). Download the official raw-format JSON and image archives, then extract them in place:
+
+```bash
+hf download lmms-lab/LLaVA-NeXT-Data \
+  --repo-type dataset \
+  --include "llava_next_raw_format/*" \
+  --local-dir data
+
+for archive in data/llava_next_raw_format/*.tar.gz; do
+  tar -xzf "$archive" -C data/llava_next_raw_format
+done
+```
+
+After preparation, the checked-in recipes use these paths:
+
+- `train/recipe/mmcs.json`: images in `data/images` and annotations in `data/segment`.
+- `train/recipe/sft_779k.json`: the official 779k LLaVA-NeXT SFT data in `data/llava_next_raw_format`, including `llava_next_raw_format_processed.json`.
+
+The default SFT recipe uses the standard, non-packed dataset format.
 
 Recipe paths are relative to the repository root. Each entry has the form:
 
@@ -42,7 +130,7 @@ Recipe paths are relative to the repository root. Each entry has the form:
 {
   "name": "dataset_name",
   "image_folder": "data/images",
-  "annotation": "data/annotations/train.json",
+  "annotation": "data/segment/train.json",
   "sample_ratio": 1.0
 }
 ```
