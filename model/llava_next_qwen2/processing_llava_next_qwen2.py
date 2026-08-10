@@ -6,7 +6,6 @@ from PIL import Image
 from transformers.processing_utils import ProcessorMixin
 from transformers.tokenization_utils_base import AddedToken
 
-from common.kosmos_tokens import KOSMOS_DEFAULT_NUM_BINS, kosmos_tokens
 from model.constants import IGNORE_INDEX, IMAGE_TOKEN, ROLE_MAP
 from model.dynamic_resolution import dynamic_preprocess
 
@@ -36,21 +35,9 @@ class LlavaNextQwen2Processor(ProcessorMixin):
         else:
             self.image_token_id = tokenizer.image_token_id
 
-        self.coordinate_token_bins = KOSMOS_DEFAULT_NUM_BINS
         self.image_processor = image_processor
         self.tokenizer = tokenizer
         super().__init__(image_processor, tokenizer)
-
-    def enable_coordinate_tokens(self, num_bins: int = KOSMOS_DEFAULT_NUM_BINS) -> int:
-        coordinate_tokens = [
-            AddedToken(token, normalized=False, special=False)
-            for token in kosmos_tokens(num_bins)
-            if self.tokenizer.convert_tokens_to_ids(token) == self.tokenizer.unk_token_id
-        ]
-        num_added = self.tokenizer.add_tokens(coordinate_tokens)
-        self.num_new_tokens += num_added
-        self.coordinate_token_bins = num_bins
-        return num_added
 
     def __call__(
         self,
