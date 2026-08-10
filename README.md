@@ -9,7 +9,7 @@ The released configuration uses SigLIP2 as the vision encoder and Qwen2.5-3B-Ins
 - `common/`: shared command-line arguments and helpers.
 - `model/`: LLaVA-NeXT model implementations, dynamic-resolution logic, MMCS code-switching, and projectors.
 - `train/`: the training entry point, datasets, trainer, and data recipes.
-- `scripts/train/mmcs.sh`: the two-stage training pipeline.
+- `scripts/train/`: two-stage training scripts for the released LLM backbones.
 - `lmms_eval/`: vendored evaluation harness and MMCS model adapters.
 - `scripts/eval/all.sh`: multi-benchmark evaluation entry point.
 - `utils/`: data formatting and merging utilities.
@@ -137,15 +137,31 @@ Recipe paths are relative to the repository root. Each entry has the form:
 
 ## Training
 
-Launch training from the repository root:
+Choose a backbone and launch its two-stage training script from the repository root:
+
+| Script | Vision encoder | Language model |
+| --- | --- | --- |
+| `scripts/train/siglip2-qwen25-3b.sh` | `google/siglip2-so400m-patch16-384` | `Qwen/Qwen2.5-3B-Instruct` |
+| `scripts/train/siglip2-qwen3-8b.sh` | `google/siglip2-so400m-patch16-384` | `Qwen/Qwen3-8B` |
+| `scripts/train/siglip2-llama3-8b.sh` | `google/siglip2-so400m-patch16-384` | `meta-llama/Meta-Llama-3-8B-Instruct` |
 
 ```bash
-bash scripts/train/mmcs.sh
+bash scripts/train/siglip2-qwen25-3b.sh
 ```
+
+To use local model directories, set the path overrides when launching the selected script:
+
+```bash
+VISION_MODEL_PATH=/path/to/siglip2-so400m-patch16-384 \
+LANGUAGE_MODEL_PATH=/path/to/Qwen2.5-3B-Instruct \
+bash scripts/train/siglip2-qwen25-3b.sh
+```
+
+`NUM_GPUS`, `MASTER_PORT`, `PRETRAIN_RECIPE`, `SFT_RECIPE`, `PRETRAIN_OUTPUT_DIR`, and `SFT_OUTPUT_DIR` can also be overridden through environment variables.
 
 The script runs two stages in sequence:
 
-1. MMCS pretraining with `train/recipe/mmcs.json`, a frozen SigLIP2 vision encoder, a frozen Qwen2.5-3B-Instruct language model, and a trainable patch-merger projector.
+1. MMCS pretraining with `train/recipe/mmcs.json`, a frozen SigLIP2 vision encoder, a frozen language model, and a trainable patch-merger projector.
 2. LoRA SFT with `train/recipe/sft_779k.json`.
 
 ## Evaluation
