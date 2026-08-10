@@ -2,37 +2,37 @@
     {
         "name": "coco2014_75k_mmcs",
         "image_folder": "data/images",
-        "annotation": "data/segment/coco2014_75k_llava.json",
+        "annotation": "data/annotations/coco2014_75k_llava.json",
         "sample_ratio": 1.0
     },
     {
         "name": "flickr29k_mmcs",
         "image_folder": "data/images",
-        "annotation": "data/segment/flickr29k_llava.json",
+        "annotation": "data/annotations/flickr29k_llava.json",
         "sample_ratio": 1.0
     },
     {
         "name": "gqa_108k_mmcs",
         "image_folder": "data/images",
-        "annotation": "data/segment/gqa_108k_llava.json",
+        "annotation": "data/annotations/gqa_108k_llava.json",
         "sample_ratio": 1.0
     },
     {
         "name": "objects365_343k_mmcs",
         "image_folder": "data/images",
-        "annotation": "data/segment/objects365_343k_llava.json",
+        "annotation": "data/annotations/objects365_343k_llava.json",
         "sample_ratio": 1.0
     },
     {
         "name": "openimages_127k_mmcs",
         "image_folder": "data/images",
-        "annotation": "data/segment/openimages_127k_llava.json",
+        "annotation": "data/annotations/openimages_127k_llava.json",
         "sample_ratio": 1.0
     },
     {
         "name": "SA_91k_mmcs",
         "image_folder": "data/images",
-        "annotation": "data/segment/SA_91k_llava.json",
+        "annotation": "data/annotations/SA_91k_llava.json",
         "sample_ratio": 1.0
     }
 ]

@@ -90,7 +90,7 @@ def format_mmcs_to_conversations(
 
 
 if __name__ == "__main__":
-    data_dir = "data/segment"
+    data_dir = "data/annotations"
     dataset_name = "sharecaptioner_600k"
 
     # format_mmcs_to_conversations(

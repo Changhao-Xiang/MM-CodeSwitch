@@ -39,12 +39,8 @@ Download the annotations from the repository root:
 hf download LockOnN/MMCS-Data \
   --repo-type dataset \
   --include "annotations/*" \
-  --local-dir data/mmcs_download
-
-ln -s mmcs_download/annotations data/segment
+  --local-dir data
 ```
-
-If `data/segment` already exists, replace the symbolic-link command with the equivalent copy or path update for your setup.
 
 Download the source images from the official sites or repositories below, then arrange them under `data/images` with the paths expected by the annotations:
 
@@ -65,7 +61,7 @@ The MMCS Open Images annotations reference 127,237 images whose official ImageID
 mkdir -p data/images/openimages/train_0
 
 sed -n 's#.*"image": "openimages/train_0/\([^"]*\)\.jpg".*#train/\1#p' \
-  data/segment/openimages_127k_llava.json > data/openimages_mmcs_ids.txt
+  data/annotations/openimages_127k_llava.json > data/openimages_mmcs_ids.txt
 
 wget -O data/openimages_downloader.py \
   https://raw.githubusercontent.com/openimages/dataset/master/downloader.py
@@ -85,7 +81,7 @@ import re
 from pathlib import Path
 
 image_root = Path("data/images")
-annotation_root = Path("data/segment")
+annotation_root = Path("data/annotations")
 image_pattern = re.compile(r'^\s*"image": "([^"]+)"')
 missing_count = 0
 missing_examples = []
@@ -140,15 +136,13 @@ data/
 │   │       └── *.jpg
 │   └── SA/
 │       └── *.jpg
-├── mmcs_download/
-│   └── annotations/
-│       ├── coco2014_75k_llava.json
-│       ├── flickr29k_llava.json
-│       ├── gqa_108k_llava.json
-│       ├── objects365_343k_llava.json
-│       ├── openimages_127k_llava.json
-│       └── SA_91k_llava.json
-├── segment -> mmcs_download/annotations
+├── annotations/
+│   ├── coco2014_75k_llava.json
+│   ├── flickr29k_llava.json
+│   ├── gqa_108k_llava.json
+│   ├── objects365_343k_llava.json
+│   ├── openimages_127k_llava.json
+│   └── SA_91k_llava.json
 └── llava_next_raw_format/
     ├── llava_next_raw_format_processed.json
     └── <extracted image directories>/
@@ -156,7 +150,7 @@ data/
 
 After preparation, the checked-in recipes use these paths:
 
-- `train/recipe/mmcs.json`: images in `data/images` and annotations in `data/segment`.
+- `train/recipe/mmcs.json`: images in `data/images` and annotations in `data/annotations`.
 - `train/recipe/sft_779k.json`: the official 779k LLaVA-NeXT SFT data in `data/llava_next_raw_format`, including `llava_next_raw_format_processed.json`.
 
 The default SFT recipe uses the standard, non-packed dataset format.
@@ -167,7 +161,7 @@ Recipe paths are relative to the repository root. Each entry has the form:
 {
   "name": "dataset_name",
   "image_folder": "data/images",
-  "annotation": "data/segment/train.json",
+  "annotation": "data/annotations/train.json",
   "sample_ratio": 1.0
 }
 ```
