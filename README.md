@@ -51,13 +51,13 @@ Download the source images from the official sites or repositories below, then a
 | COCO 2014 | [COCO downloads](https://cocodataset.org/#download) | `coco/train2014/*.jpg` |
 | Flickr30K | [University of Illinois Flickr30K release](https://shannon.cs.illinois.edu/DenotationGraph/data/index.html) | `flickr30k/*.jpg` |
 | GQA | [Stanford GQA downloads](https://cs.stanford.edu/people/dorarad/gqa/download.html) | `gqa/images/*.jpg` |
-| Objects365 | [Objects365 official download page](https://www.objects365.org/download.html) | `objects365/train/*.jpg` |
-| Open Images | [Open Images V7 downloads](https://storage.googleapis.com/openimages/web/download_v7.html) and [official downloader](https://github.com/openimages/dataset) | `openimages/train_0/*.jpg` |
+| Objects365 | [BAAI Objects365_2019 download](https://data.baai.ac.cn/datadetail/Objects365_2019) | `objects365/train/*.jpg` |
+| Open Images | [CVDF Open Images repository](https://github.com/cvdfoundation/open-images-dataset) and [official `train_0.tar.gz`](https://open-images-dataset.s3.amazonaws.com/tar/train_0.tar.gz) | `openimages/train_0/*.jpg` |
 | SA-1B | [Meta SA-1B download portal](https://ai.meta.com/datasets/segment-anything-downloads/) and [official repository](https://github.com/facebookresearch/segment-anything) | `SA/*.jpg` |
 
-For COCO, download the 2014 training images. For Flickr30K, download the image release after reviewing its Flickr usage terms. For GQA, download `Images.zip`. For Objects365, register through the official download page, download the training images, and preserve the `obj365_train_*.jpg` filenames. Extract or link each source into the layout shown above.
+For COCO, download the 2014 training images. For Flickr30K, download the image release after reviewing its Flickr usage terms. For GQA, download `Images.zip`. For Objects365, obtain the training images from the linked BAAI Objects365_2019 page and preserve the `obj365_train_*.jpg` filenames. Extract or link each source into the layout shown above.
 
-The MMCS Open Images subset contains 127,237 training images from the official `train_0` partition. The official downloader can fetch only the referenced IDs:
+The MMCS Open Images annotations reference 127,237 images whose official ImageIDs start with `0`. They are all contained in CVDF's single `train_0.tar.gz` image archive (approximately 46 GB). The similarly named `open-images-dataset-train0.tsv` is a separate one-million-row manifest for transferring original image URLs and is not the `train_0` image archive. You may download and extract the archive directly, or use the official downloader below to fetch only the referenced ImageIDs:
 
 ```bash
 mkdir -p data/images/openimages/train_0
@@ -73,7 +73,7 @@ python data/openimages_downloader.py data/openimages_mmcs_ids.txt \
   --num_processes=16
 ```
 
-For SA-1B, accept the SA-1B Research License on Meta's download portal and download the official tar shards containing the referenced images (`sa_2.jpg` through `sa_111876.jpg`). Only the `.jpg` files are needed for MMCS; place them directly in `data/images/SA`.
+For SA-1B, accept the SA-1B Research License on Meta's download portal and download `sa_000000.tar` through `sa_000010.tar` (11 archives in total). The released annotations reference 91,107 unique images from these archives, ranging from `sa_2.jpg` through `sa_111876.jpg`. Only the referenced `.jpg` files are needed for MMCS; place them directly in `data/images/SA`.
 
 Only files referenced by the annotations are required. After preparing the directories, verify that every annotation resolves under `data/images` without loading the multi-gigabyte JSON files into memory:
 
