@@ -15,7 +15,6 @@ from accelerate.state import AcceleratorState
 from packaging import version
 from tqdm import tqdm
 
-from common.kosmos_tokens import post_process_kosmos_generation
 from lmms_eval import utils
 from lmms_eval.api.instance import Instance
 from lmms_eval.api.model import lmms
@@ -89,14 +88,11 @@ class Llava_mmcs(lmms):
         use_cache=True,
         max_length=4096,
         max_pixels=728 * 28 * 28,
-        kosmos_postprocess: Optional[str] = None,
         **kwargs,
     ) -> None:
         super().__init__()
         # Do not use kwargs for now
         assert kwargs == {}, f"Unexpected kwargs: {kwargs}"
-        self.kosmos_postprocess = kosmos_postprocess
-
         accelerator_kwargs = InitProcessGroupKwargs(timeout=timedelta(weeks=52))
         accelerator = Accelerator(kwargs_handlers=[accelerator_kwargs])
         self.accelerator = accelerator
@@ -464,21 +460,10 @@ class Llava_mmcs(lmms):
                         pad_token_id=self.tokenizer.pad_token_id,
                         eos_token_id=self.tokenizer.eos_token_id,
                     )
-                # KOSMOS coordinate/markup tokens are regular added tokens, not
-                # tokenizer special tokens.  Keeping tokenizer special tokens
-                # here leaks Qwen chat delimiters (for example ``A.<|im_end|>``)
-                # into benchmark answers without preserving anything needed for
-                # grounding.
+                # Keeping tokenizer special tokens here leaks Qwen chat
+                # delimiters (for example ``A.<|im_end|>``) into benchmark
+                # answers.
                 text_outputs = self.tokenizer.batch_decode(output_ids, skip_special_tokens=True)
-                if self.kosmos_postprocess is not None:
-                    text_outputs = [
-                        post_process_kosmos_generation(
-                            text,
-                            mode=self.kosmos_postprocess,
-                            num_bins=getattr(self._config, "coordinate_token_bins", 32),
-                        )
-                        for text in text_outputs
-                    ]
                 # Some generation backends do not consume task-level `until`
                 # strings as stopping criteria.  Match lm-eval semantics by
                 # trimming the decoded response at the first requested stop.
