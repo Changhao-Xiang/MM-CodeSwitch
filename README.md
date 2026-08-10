@@ -119,6 +119,41 @@ for archive in data/llava_next_raw_format/*.tar.gz; do
 done
 ```
 
+A minimal final training-data layout should look like this (helper files and downloaded archives are omitted):
+
+```text
+data/
+├── images/
+│   ├── coco/
+│   │   └── train2014/
+│   │       └── *.jpg
+│   ├── flickr30k/
+│   │   └── *.jpg
+│   ├── gqa/
+│   │   └── images/
+│   │       └── *.jpg
+│   ├── objects365/
+│   │   └── train/
+│   │       └── *.jpg
+│   ├── openimages/
+│   │   └── train_0/
+│   │       └── *.jpg
+│   └── SA/
+│       └── *.jpg
+├── mmcs_download/
+│   └── annotations/
+│       ├── coco2014_75k_llava.json
+│       ├── flickr29k_llava.json
+│       ├── gqa_108k_llava.json
+│       ├── objects365_343k_llava.json
+│       ├── openimages_127k_llava.json
+│       └── SA_91k_llava.json
+├── segment -> mmcs_download/annotations
+└── llava_next_raw_format/
+    ├── llava_next_raw_format_processed.json
+    └── <extracted image directories>/
+```
+
 After preparation, the checked-in recipes use these paths:
 
 - `train/recipe/mmcs.json`: images in `data/images` and annotations in `data/segment`.
