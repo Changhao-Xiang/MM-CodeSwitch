@@ -195,5 +195,6 @@ Override `MODEL_CKPT`, `TASKS`, `NUM_PROCESSES`, or `OUTPUT_PATH` as needed; add
 
 ## Acknowledgements
 
-The model architecture was implemented with reference to [InternVL](https://github.com/OpenGVLab/InternVL). We thank the OpenGVLab and InternVL contributors for open-sourcing their work.
-The evaluation code in this repository is based on [lmms-eval](https://github.com/EvolvingLMMs-Lab/lmms-eval). We thank the LMMS-Lab contributors for developing and open-sourcing the project.
+Our model implementation builds upon [InternVL](https://github.com/OpenGVLab/InternVL).
+The evaluation code in this repository is based on [lmms-eval](https://github.com/EvolvingLMMs-Lab/lmms-eval).
+We thank the contributors to InternVL and lmms-eval for developing and open-sourcing these projects.
