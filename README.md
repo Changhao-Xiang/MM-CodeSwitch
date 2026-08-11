@@ -11,15 +11,15 @@ Training consists of 773k-sample MMCS pretraining followed by 779k-sample LLaVA-
 - `train/`: the training entry point, datasets, trainer, and data recipes.
 - `scripts/train/`: two-stage training scripts for the released LLM backbones.
 - `lmms_eval/`: vendored evaluation harness and MMCS model adapters.
-- `scripts/eval/all.sh`: multi-benchmark evaluation entry point.
+- `scripts/eval/`: full-suite and task-specific evaluation entry points.
 - `utils/`: data formatting and merging utilities.
 
 ## Installation
 
-Python jobs should be launched from the repository root. The training environment was validated with Python 3.10.20, PyTorch 2.6.0 (CUDA 12.4), and Transformers 4.51.3:
+Python jobs should be launched from the repository root. The training environment was validated with Python 3.10, PyTorch 2.6.0 (CUDA 12.4), and Transformers 4.51.3:
 
 ```bash
-conda create -n mmcs python=3.10.20 -y
+conda create -n mmcs python=3.10 -y
 conda activate mmcs
 pip install -r requirements.txt
 pip install flash-attn==2.7.4.post1 --no-build-isolation
@@ -31,7 +31,7 @@ FlashAttention is installed after PyTorch and the other dependencies because its
 The key versions used for training are:
 
 ```text
-Python          3.10.20
+Python          3.10
 PyTorch         2.6.0+cu124
 torchvision     0.21.0
 torchaudio      2.6.0
@@ -189,6 +189,21 @@ Run the checked-in benchmark suite with:
 ```bash
 MODEL_CKPT=checkpoints/siglip2-qwen25-next-3B-sft-779k-lora \
   bash scripts/eval/all.sh
+```
+
+The suite can also be evaluated separately by task category:
+
+| Category               | Script                               | Benchmarks                                                            |
+| ---------------------- | ------------------------------------ | --------------------------------------------------------------------- |
+| Visual Grounding       | `scripts/eval/grounding.sh`   | RefCOCO, RefCOCO+, RefCOCOg                                           |
+| Perception-centric     | `scripts/eval/perception.sh`  | AI2D, ChartQA, OCRBench, TextVQA, CVBench, RealWorldQA, V-Star         |
+| General VQA            | `scripts/eval/general.sh`     | MMBench, MME, MMStar, MMVet, MMMU, GQA                                 |
+
+For example:
+
+```bash
+MODEL_CKPT=checkpoints/siglip2-qwen25-next-3B-sft-779k-lora \
+  bash scripts/eval/grounding.sh
 ```
 
 Override `MODEL_CKPT`, `TASKS`, `NUM_PROCESSES`, or `OUTPUT_PATH` as needed; additional arguments are forwarded to `lmms_eval`.
