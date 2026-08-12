@@ -1,6 +1,6 @@
 # MMCS: Multi-Modal Code-Switching
 
-This repository contains the model, training, and evaluation code for *MultiModal Code-Switching: Interleaving Visual Objects into Language for Explicit Object-Level Alignment* ([arXiv, coming soon](#)).
+This repository contains the model, training, and evaluation code for *MultiModal Code-Switching: Interleaving Visual Objects into Language for Explicit Object-Level Alignment* ([arXiv](https://arxiv.org/abs/2608.11167)).
 
 Training consists of 773k-sample MMCS pretraining followed by 779k-sample LLaVA-NeXT LoRA supervised fine-tuning (SFT). Evaluation is provided through the bundled `lmms_eval` fork.
 
